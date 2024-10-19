@@ -117,7 +117,7 @@ export function renderSummary(answers) {
                 <h2>Our Perfect Date ❤️</h2>
                 <p class="summary-date">🗓️ ${formattedDate}</p>
                 <button id="addToCalendar" class="calendar-button">
-                    📅 Add to your Calendar <br> My Sugarplums😉
+                    📅 Click this to <br> Add to your Calendar <br> My Sugarplums😉
                 </button>
                 <p id="calendarMessage" class="calendar-message"></p>
             </div>
