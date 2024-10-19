@@ -1,0 +1,1 @@
+This is a web application designed to help users express their feelings and take a step towards connecting with their crushes. Whether you’re looking to confess your feelings or set up a date, this app provides a fun and supportive environment to share your thoughts and take that leap of faith.
