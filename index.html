@@ -222,6 +222,10 @@
         .summary-header {
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
         .summary-header h2 {
@@ -336,6 +340,65 @@
         .hearts {
             text-align: center;
         }
+
+        .calendar-button {
+            background-color: var(--primary-color, #ff69b4);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 15px 0;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .calendar-button {
+            background-color: var(--primary-color, #ff69b4);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 15px auto;
+            /* Changed margin to auto for horizontal centering */
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: block;
+            /* Ensures the button takes full width for margin: auto to work */
+        }
+
+        .calendar-button:hover {
+            transform: scale(1.05);
+            background-color: var(--primary-color-dark, #ff1493);
+        }
+
+        .calendar-button:active {
+            transform: scale(0.95);
+        }
+
+        .calendar-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .calendar-message {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            transition: opacity 0.3s ease;
+            text-align: center;
+            /* Centers the message text */
+        }
+
+        .calendar-message.success {
+            color: var(--success-color, #28a745);
+        }
+
+        .calendar-message.error {
+            color: var(--error-color, #dc3545);
+        }
+
     </style>
 </head>
 
