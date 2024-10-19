@@ -62,15 +62,15 @@ class ConfessionApp {
                     <div class="card-title">Coffee Shop</div>
                 </div>
                 <div class="card" data-value="Park">
-                    <img src="assets/park.jfif" alt="Park">
+                    <img src="assets/park.jpg" alt="Park">
                     <div class="card-title">Park</div>
                 </div>
                 <div class="card" data-value="Restaurant">
-                    <img src="assets/restaurant.jfif" alt="Restaurant">
+                    <img src="assets/restaurant.jpg" alt="Restaurant">
                     <div class="card-title">Restaurant</div>
                 </div>
                 <div class="card" data-value="Mall">
-                    <img src="assets/mall.jfif" alt="Mall">
+                    <img src="assets/mall.jpg" alt="Mall">
                     <div class="card-title">Mall</div>
                 </div>
             </div>
@@ -82,19 +82,19 @@ class ConfessionApp {
             <h1>Which movie would you like to watch?</h1>
             <div class="cards-grid">
                 <div class="card" data-value="Romantic Comedy">
-                    <img src="assets/anyone_but_you.jfif" alt="Romantic Comedy">
+                    <img src="assets/anyone_but_you.jpg" alt="Romantic Comedy">
                     <div class="card-title">Romantic Comedy</div>
                 </div>
                 <div class="card" data-value="Action">
-                    <img src="assets/action_movie.jfif" alt="Action">
+                    <img src="assets/action_movie.jpg" alt="Action">
                     <div class="card-title">Action</div>
                 </div>
                 <div class="card" data-value="Horror">
-                    <img src="assets/horror.jfif" alt="Horror">
+                    <img src="assets/horror.jpg" alt="Horror">
                     <div class="card-title">Horror</div>
                 </div>
                 <div class="card" data-value="Animation">
-                    <img src="assets/anime.jfif" alt="Animation">
+                    <img src="assets/anime.png" alt="Animation">
                     <div class="card-title">Animation</div>
                 </div>
             </div>
@@ -106,19 +106,19 @@ class ConfessionApp {
             <h1>What would you like to eat?</h1>
             <div class="cards-grid">
                 <div class="card" data-value="Pizza">
-                    <img src="assets/pizza.jfif" alt="Pizza">
+                    <img src="assets/pizza.jpg" alt="Pizza">
                     <div class="card-title">Pizza</div>
                 </div>
                 <div class="card" data-value="Sushi">
-                    <img src="assets/sushi.jfif" alt="Sushi">
+                    <img src="assets/sushi.jpg" alt="Sushi">
                     <div class="card-title">Sushi</div>
                 </div>
                 <div class="card" data-value="Burgers">
-                    <img src="assets/burger.jfif" alt="Burgers">
+                    <img src="assets/burger.jpg" alt="Burgers">
                     <div class="card-title">Burgers</div>
                 </div>
                 <div class="card" data-value="Pasta">
-                    <img src="assets/pasta.jfif" alt="Pasta">
+                    <img src="assets/pasta.webp" alt="Pasta">
                     <div class="card-title">Pasta</div>
                 </div>
             </div>
