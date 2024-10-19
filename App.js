@@ -143,17 +143,30 @@ class ConfessionApp {
         const yesButton = document.getElementById('yesButton');
         yesButton.addEventListener('click', () => this.nextStep());
 
+        // Add date-time input validation
+        const dateTimeInput = document.getElementById('dateTime');
+        if (dateTimeInput) {
+            dateTimeInput.addEventListener('change', (e) => {
+                const selectedDate = new Date(e.target.value);
+                const now = new Date();
+                const nextButton = e.target.parentElement.querySelector('.next-button');
+                
+                if (selectedDate <= now) {
+                    alert('Please select a future date and time you dumdum!');
+                    e.target.value = '';
+                    nextButton.disabled = true;
+                } else {
+                    nextButton.disabled = false;
+                }
+            });
+        }
+
         // Add card selection listeners
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', () => {
-                // Remove selected class from other cards in the same grid
                 const gridCards = card.closest('.cards-grid').querySelectorAll('.card');
                 gridCards.forEach(c => c.classList.remove('selected'));
-                
-                // Add selected class to clicked card
                 card.classList.add('selected');
-                
-                // Enable the next button
                 const nextButton = card.closest('.step').querySelector('.next-button');
                 nextButton.disabled = false;
             });
