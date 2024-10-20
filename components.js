@@ -78,7 +78,7 @@ export function createCalendarEvent(eventDetails) {
                   URL.revokeObjectURL(url);
                   return { 
                       success: true, 
-                      message: "Calendar event downloaded sweetiepie!" 
+                      message: "Calendar event downloaded sweetiepie! Open that file to save to your calendar app 😉" 
                   };
               });
         }
