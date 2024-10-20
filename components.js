@@ -8,80 +8,109 @@ export function createCalendarEvent(eventDetails) {
     const eventDescription = `Movie: ${eventDetails.movie}\nFood: ${eventDetails.food}`;
     const eventLocation = eventDetails.place;
 
-    // Google Calendar URL (fallback)
-    function getGoogleCalendarURL() {
-        const formatDate = (date) => date.toISOString().replace(/-|:|\.\d\d\d/g, '');
-        return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(eventLocation)}&dates=${formatDate(startDate)}/${formatDate(endDate)}`;
+    // Generate ICS file content
+    function generateICSContent() {
+        // Format date to ICS format (YYYYMMDDTHHMMSSZ)
+        const formatICSDate = (date) => {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+
+        return [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Your Company//Love Date Calendar//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            `DTSTART:${formatICSDate(startDate)}`,
+            `DTEND:${formatICSDate(endDate)}`,
+            `SUMMARY:${eventTitle}`,
+            `DESCRIPTION:${eventDescription.replace(/\n/g, '\\n')}`,
+            `LOCATION:${eventLocation}`,
+            'STATUS:CONFIRMED',
+            `UID:${new Date().getTime()}@yourdomain.com`,
+            'SEQUENCE:0',
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
     }
 
-    // Try different calendar integration methods
+    // Function to download ICS file
+    function downloadICS(filename, content) {
+        const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+        
+        // For iOS devices, create a direct download link
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                window.location.href = reader.result;
+            };
+            reader.readAsDataURL(blob);
+            return Promise.resolve({ 
+                success: true, 
+                message: "Opening in Calendar app..." 
+            });
+        }
+
+        // For other devices, try using the File System Access API
+        if ('showSaveFilePicker' in window) {
+            return showSaveFilePicker({
+                suggestedName: filename,
+                types: [{
+                    description: 'Calendar Event',
+                    accept: { 'text/calendar': ['.ics'] },
+                }],
+            }).then(handle => handle.createWritable())
+              .then(writable => writable.write(blob).then(() => writable.close()))
+              .then(() => ({ 
+                  success: true, 
+                  message: "Calendar event file saved sweetiepie!" 
+              }))
+              .catch(() => {
+                  // Fallback to traditional download if user cancels File System Access
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  return { 
+                      success: true, 
+                      message: "Calendar event downloaded sweetiepie!" 
+                  };
+              });
+        }
+
+        // Fallback for browsers without File System Access API
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return Promise.resolve({ 
+            success: true, 
+            message: "Calendar event downloaded!" 
+        });
+    }
+
+    // Main function to add event to calendar
     async function addToCalendar() {
-        // Check if the modern Calendar API is supported
-        if ('showSaveFilePicker' in window && 'calendars' in navigator) {
-            try {
-                const event = {
-                    title: eventTitle,
-                    description: eventDescription,
-                    location: eventLocation,
-                    start: startDate,
-                    end: endDate
-                };
-                
-                await navigator.calendars.createEvent(event);
-                return { success: true, message: "Event added to your calendar!" };
-            } catch (error) {
-                console.log("Calendar API failed, trying alternative methods...");
-            }
+        try {
+            const icsContent = generateICSContent();
+            const filename = `date-${startDate.toISOString().split('T')[0]}.ics`;
+            return await downloadICS(filename, icsContent);
+        } catch (error) {
+            console.error("Failed to create calendar event:", error);
+            return { 
+                success: false, 
+                message: "Couldn't create calendar event. Please try again my love." 
+            };
         }
-
-        // Try using the deprecated addEvent API (still works in some browsers)
-        if ('CalendarEvent' in window) {
-            try {
-                const calendarEvent = new CalendarEvent(eventTitle, {
-                    description: eventDescription,
-                    location: eventLocation,
-                    start: startDate,
-                    end: endDate
-                });
-                await calendarEvent.show();
-                return { success: true, message: "Please confirm adding the event to your calendar." };
-            } catch (error) {
-                console.log("Calendar Event API failed, trying alternative methods...");
-            }
-        }
-
-        // Fallback: Try common calendar URL schemes
-        const userAgent = navigator.userAgent.toLowerCase();
-        
-        // iOS devices
-        if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
-            const icsContent = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'BEGIN:VEVENT',
-                `DTSTART:${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-                `DTEND:${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-                `SUMMARY:${eventTitle}`,
-                `DESCRIPTION:${eventDescription}`,
-                `LOCATION:${eventLocation}`,
-                'END:VEVENT',
-                'END:VCALENDAR'
-            ].join('\n');
-
-            const dataUri = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
-            window.open(dataUri);
-            return { success: true, message: "Opening calendar app..." };
-        }
-        
-        // Android devices
-        if (userAgent.includes('android')) {
-            window.open(getGoogleCalendarURL());
-            return { success: true, message: "Opening Google Calendar..." };
-        }
-
-        // Desktop fallback to Google Calendar
-        window.open(getGoogleCalendarURL(), '_blank');
-        return { success: true, message: "Opening Google Calendar in a new tab..." };
     }
 
     return addToCalendar;
@@ -93,6 +122,30 @@ export function createStep(id, content) {
     step.className = 'step';
     step.innerHTML = content;
     return step;
+}
+
+export function validateDateTime(dateTimeValue) {
+    if (!dateTimeValue) {
+        return {
+            isValid: false,
+            message: 'Please select a date and time first dumdum!'
+        };
+    }
+
+    const selectedDate = new Date(dateTimeValue);
+    const now = new Date();
+
+    if (selectedDate <= now) {
+        return {
+            isValid: false,
+            message: 'Please select a future date and time dumdum!'
+        };
+    }
+
+    return {
+        isValid: true,
+        message: ''
+    };
 }
 
 export function renderSummary(answers) {
@@ -117,7 +170,7 @@ export function renderSummary(answers) {
                 <h2>Our Perfect Date ❤️</h2>
                 <p class="summary-date">🗓️ ${formattedDate}</p>
                 <button id="addToCalendar" class="calendar-button">
-                    📅 Click this to <br> Add to your Calendar <br> My Sugarplums😉
+                    📅 Add to your Calendar <br> My Sugarplums😉
                 </button>
                 <p id="calendarMessage" class="calendar-message"></p>
             </div>
@@ -172,7 +225,7 @@ export function renderSummary(answers) {
             messageElement.textContent = result.message;
             messageElement.className = 'calendar-message success';
         } catch (error) {
-            messageElement.textContent = "Couldn't add to calendar. Please try again.";
+            messageElement.textContent = "Couldn't add to calendar. Please try again sweetiepie!";
             messageElement.className = 'calendar-message error';
             button.disabled = false;
         }
