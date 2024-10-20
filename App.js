@@ -1,4 +1,4 @@
-import { createStep, renderSummary, createCalendarEvent, validateDateTime } from './components.js';
+import { createStep, renderSummary, validateDateTime } from './components.js';
 import { moveButton } from './utils.js';
 
 class ConfessionApp {
