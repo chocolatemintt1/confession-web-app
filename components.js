@@ -94,7 +94,7 @@ export function createCalendarEvent(eventDetails) {
         URL.revokeObjectURL(url);
         return Promise.resolve({ 
             success: true, 
-            message: "Calendar event downloaded!" 
+            message: "Calendar event downloaded my sugarplums!<br> Open that file to save to your calendar app 😉" 
         });
     }
 
