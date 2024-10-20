@@ -1,4 +1,4 @@
-import { createStep, renderSummary, createCalendarEvent } from './components.js';
+import { createStep, renderSummary, createCalendarEvent, validateDateTime } from './components.js';
 import { moveButton } from './utils.js';
 
 class ConfessionApp {
@@ -12,7 +12,7 @@ class ConfessionApp {
     initThemeSwitcher() {
         const themeSwitcher = document.getElementById('themeSwitcher');
         const html = document.documentElement;
-        
+
         // Check for saved theme preference or default to dark
         const savedTheme = localStorage.getItem('theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
@@ -21,7 +21,7 @@ class ConfessionApp {
         themeSwitcher.addEventListener('click', () => {
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
+
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             themeSwitcher.innerHTML = newTheme === 'dark' ? '🌙' : '☀️';
@@ -143,19 +143,24 @@ class ConfessionApp {
         const yesButton = document.getElementById('yesButton');
         yesButton.addEventListener('click', () => this.nextStep());
 
-        // Add date-time input validation
+        // Updated date-time input validation
         const dateTimeInput = document.getElementById('dateTime');
+        const dateTimeError = document.createElement('div');
+        dateTimeError.className = 'error-message';
         if (dateTimeInput) {
+            dateTimeInput.parentElement.appendChild(dateTimeError);
+
             dateTimeInput.addEventListener('change', (e) => {
-                const selectedDate = new Date(e.target.value);
-                const now = new Date();
+                const validation = validateDateTime(e.target.value);
                 const nextButton = e.target.parentElement.querySelector('.next-button');
-                
-                if (selectedDate <= now) {
-                    alert('Please select a future date and time you dumdum!');
+
+                if (!validation.isValid) {
+                    dateTimeError.textContent = validation.message;
+                    dateTimeError.style.display = 'block';
                     e.target.value = '';
                     nextButton.disabled = true;
                 } else {
+                    dateTimeError.style.display = 'none';
                     nextButton.disabled = false;
                 }
             });
@@ -186,8 +191,21 @@ class ConfessionApp {
     }
 
     nextStep() {
-        this.collectCurrentStepData();
+        // Add validation before proceeding to next step
+        if (this.currentStep === 2) {
+            const dateTimeInput = document.getElementById('dateTime');
+            const validation = validateDateTime(dateTimeInput.value);
+
+            if (!validation.isValid) {
+                const dateTimeError = dateTimeInput.parentElement.querySelector('.error-message');
+                dateTimeError.textContent = validation.message;
+                dateTimeError.style.display = 'block';
+                return;
+            }
+        }
         
+        this.collectCurrentStepData();
+
         if (this.currentStep === 5) {
             renderSummary(this.answers);
             this.currentStep++;
@@ -201,7 +219,7 @@ class ConfessionApp {
     }
 
     collectCurrentStepData() {
-        switch(this.currentStep) {
+        switch (this.currentStep) {
             case 1:
                 this.answers.response = "Yes";
                 break;
@@ -213,8 +231,8 @@ class ConfessionApp {
             case 5:
                 const selectedCard = document.querySelector(`#step${this.currentStep} .card.selected`);
                 if (selectedCard) {
-                    const key = this.currentStep === 3 ? 'place' : 
-                              this.currentStep === 4 ? 'movie' : 'food';
+                    const key = this.currentStep === 3 ? 'place' :
+                        this.currentStep === 4 ? 'movie' : 'food';
                     this.answers[key] = selectedCard.dataset.value;
                 }
                 break;
