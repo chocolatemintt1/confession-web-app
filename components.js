@@ -64,7 +64,7 @@ export function createCalendarEvent(eventDetails) {
               .then(writable => writable.write(blob).then(() => writable.close()))
               .then(() => ({ 
                   success: true, 
-                  message: "Calendar event file saved sweetiepie!" 
+                  message: "Calendar event file saved sweetiepie! Open that file to save to your calendar app 😉" 
               }))
               .catch(() => {
                   // Fallback to traditional download if user cancels File System Access
